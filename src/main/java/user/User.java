@@ -20,7 +20,7 @@ public class User extends BaseEntity<UUID> {
     private LocalDateTime employmentDate;
     private double salary;
     private UUID restaurantId;
-
+    @Builder
     public User(UUID id, LocalDateTime created, LocalDateTime modified, User creatBy, User modifiedBy, String name, String surname, double balance, String phoneNumber, String password, Role role, LocalDateTime employmentDate, double salary, UUID restaurantId) {
         super(id, created, modified, creatBy, modifiedBy);
         this.name = name;
