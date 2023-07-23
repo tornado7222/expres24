@@ -2,23 +2,28 @@ package restaurant;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class RestaurantService {
     private static RestaurantService restaurantService = new RestaurantService();
-    private final RestaurantRepository repository = RestaurantRepository.getInstance();
+    private final RestaurantRepository restaurantRepository = RestaurantRepository.getInstance();
 
     public static RestaurantService getInstance() {
         return restaurantService;
     }
     public List<Restaurant> findAll(){
-        return repository.findAll();
+        return restaurantRepository.findAll();
     }
     public boolean add(Restaurant restaurant){
-        Optional<Restaurant> optionalRestaurant = repository.findByName(restaurant.getName());
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findByName(restaurant.getName());
         if (optionalRestaurant.isPresent()){
             return false;
         }
-        repository.add(restaurant);
+        restaurantRepository.add(restaurant);
         return true;
+    }
+
+    public Restaurant findById(UUID restaurantId) {
+        return restaurantRepository.findById(restaurantId).get();
     }
 }

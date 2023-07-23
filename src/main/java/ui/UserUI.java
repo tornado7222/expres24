@@ -2,13 +2,16 @@ package ui;
 
 import cart.Cart;
 import context.Context;
+import order.Order;
+import order.OrderService;
+import order.OrderStatus;
 import product.Product;
 import product.ProductService;
 import restaurant.Restaurant;
 import restaurant.RestaurantService;
 import user.User;
-
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class UserUI {
     private final ProductService productService = ProductService.getInstance();
     private final RestaurantService restaurantService = RestaurantService.getInstance();
+    private final OrderService orderService = OrderService.getInstance();
     public void start(User user){
         boolean isExited = false;
         while (!isExited) {
@@ -34,12 +38,27 @@ public class UserUI {
                     showRestaurants(user);
                 }
                 case 2 -> {
-
+                    showOrders(user);
                 }
                 case 3 -> {
                     showBalance(user);
                 }
                 case 0 -> isExited = true;
+            }
+        }
+    }
+
+    private void showOrders(User user) {
+        List<Order> orders = orderService.findByUserId(user.getId());
+        for (int i = 0; i < orders.size(); i++) {
+            Order order = orders.get(i);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy  HH:mm:ss");
+            Restaurant restaurant = restaurantService.findById(order.getRestaurantId());
+            System.out.println(restaurant.getName() + " restaurantidagi buyurtmalaringiz ");
+            System.out.println(i + ". Buyurtma " + user.getName() + "Tomonidan " + order.getCreated().format(formatter) + " da yaratilgan " + "Holati " + order.getStatus());
+
+            for (Product product : order.getProducts()) {
+                System.out.println(product.getName() + "-------------" + product.getPrice());
             }
         }
     }
@@ -81,24 +100,11 @@ public class UserUI {
                     isExited = true;
                 }
                 case ">" -> {
-
+                    createOrder(user, cart, restaurant);
+                    isExited = true;
                 }
                 case "#" -> {
-                    List<UUID> selectedProductId = cart.getProducts();
-                    AtomicReference<Double> counter = new AtomicReference<>((double) 0);
-                    selectedProductId.stream()
-                            .map(productService::findByID)
-                            .map(Optional::get)
-                            .map(Product::getPrice)
-                            .forEach(price -> counter.updateAndGet(v ->(v + price)));
-
-                    /*List<Product> selectedProducts =*/ selectedProductId.stream()
-                            .map(productService::findByID)
-                            .map(Optional::get)
-                            .forEach(product -> {
-                                System.out.println(product.getName() + "\t" + product.getPrice());
-                            });
-                    System.out.println("Jami summa " + counter);
+                    showCart(cart);
                 }
                 default -> {
                     try {
@@ -112,6 +118,64 @@ public class UserUI {
                         }
                     }catch (NumberFormatException e){
                         System.out.println("Siz noto'g'ri buyriq kiritdingiz");
+                    }
+                }
+            }
+        }
+    }
+
+    private void createOrder(User user, Cart cart, Restaurant restaurant) {
+        int sum = 0;
+        List<Product> products = new ArrayList<>();
+        for (UUID productId : cart.getProducts()) {
+            Product product = productService.findByID(productId).get();
+            products.add(product);
+            sum += product.getPrice();
+        }
+        if (user.getBalance() > sum){
+            user.setBalance(user.getBalance()-sum);
+            Order order = new Order(UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now(), user, user, user.getId(), restaurant.getId(), products, null, null, OrderStatus.NEW);
+            orderService.addOrder(order);
+            System.out.println("Siz mahsulotni sotib oldingiz");
+        }else {
+            System.out.println("Balansingiz yetmaydi " + user.getBalance());
+            System.out.println("Buyurtmalar narxi " + sum);
+        }
+    }
+
+    private void showCart(Cart cart) {
+        boolean isExited = false;
+        while (!isExited) {
+
+            List<UUID> selectedProductId = cart.getProducts();
+            AtomicReference<Double> counter = new AtomicReference<>((double) 0);
+
+            List<Product> list = new ArrayList<>(selectedProductId.stream()
+                    .map(productService::findByID)
+                    .map(Optional::get)
+                    .toList());
+
+            list.stream()
+                    .map(Product::getPrice)
+                    .forEach(price -> counter.updateAndGet(v -> (v + price)));
+
+            for (int i = 0; i < list.size(); i++) {
+                Product product = list.get(i);
+                System.out.println(i + ". " + product.getName() + "---------" + product.getPrice());
+            }
+
+            System.out.println("Jami summa " + counter);
+
+            System.out.println("-1 orqaga");
+            int command = Context.intScanner.nextInt();
+            switch (command) {
+                case -1 -> isExited = true;
+                default -> {
+                    if (command >= 0 && command < list.size()){
+                        Product remove = list.remove(command);
+                        cart.getProducts().remove(command);
+                    }else {
+                        System.out.println("Noto'g'ri");
                     }
                 }
             }
