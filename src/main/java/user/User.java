@@ -20,8 +20,9 @@ public class User extends BaseEntity<UUID> {
     private LocalDateTime employmentDate;
     private double salary;
     private UUID restaurantId;
+    private String location;
     @Builder
-    public User(UUID id, LocalDateTime created, LocalDateTime modified, User creatBy, User modifiedBy, String name, String surname, double balance, String phoneNumber, String password, Role role, LocalDateTime employmentDate, double salary, UUID restaurantId) {
+    public User(UUID id, LocalDateTime created, LocalDateTime modified, User creatBy, User modifiedBy, String name, String surname, double balance, String phoneNumber, String password, Role role, LocalDateTime employmentDate, double salary, UUID restaurantId, String location) {
         super(id, created, modified, creatBy, modifiedBy);
         this.name = name;
         this.surname = surname;
@@ -32,5 +33,6 @@ public class User extends BaseEntity<UUID> {
         this.employmentDate = employmentDate;
         this.salary = salary;
         this.restaurantId = restaurantId;
+        this.location = location;
     }
 }

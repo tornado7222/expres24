@@ -1,5 +1,6 @@
 package user;
 
+import java.util.List;
 import java.util.Optional;
 
 public class UserService {
@@ -28,5 +29,13 @@ public class UserService {
             }
         }
         return null;
+    }
+
+    public List<User> getCook() {
+        return userRepository.getCook();
+    }
+
+    public List<User> getCourier() {
+        return userRepository.getCourier();
     }
 }

@@ -26,4 +26,5 @@ public class RestaurantService {
     public Restaurant findById(UUID restaurantId) {
         return restaurantRepository.findById(restaurantId).get();
     }
+
 }

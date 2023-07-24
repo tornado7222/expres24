@@ -20,13 +20,16 @@ public class Order extends BaseEntity<UUID> {
     private UUID cookId;
     private UUID courierId;
     private OrderStatus status;
-    public Order(UUID id, LocalDateTime created, LocalDateTime modified, User creatBy, User modifiedBy, UUID userId, UUID restaurantId, List<Product> products, UUID cookId, UUID courierId, OrderStatus status) {
-        super(id, created, modified, creatBy, modifiedBy);
+    private String location;
+
+    public Order(UUID uuid, LocalDateTime created, LocalDateTime modified, User creatBy, User modifiedBy, UUID userId, UUID restaurantId, List<Product> products, UUID cookId, UUID courierId, OrderStatus status, String location) {
+        super(uuid, created, modified, creatBy, modifiedBy);
         this.userId = userId;
         this.restaurantId = restaurantId;
         this.products = products;
         this.cookId = cookId;
         this.courierId = courierId;
         this.status = status;
+        this.location = location;
     }
 }

@@ -119,15 +119,15 @@ public class MainUI {
                 }
                 case ADMIN -> {
                     AdminUI adminUI = new AdminUI();
-                    adminUI.start();
+                    adminUI.start(user);
                 }
                 case COOK -> {
                     CookUI cookUI = new CookUI();
-                    cookUI.start();
+                    cookUI.start(user);
                 }
                 case COURIER -> {
                     CourierUI courierUI = new CourierUI();
-                    courierUI.start();
+                    courierUI.start(user);
                 }
             }
         }

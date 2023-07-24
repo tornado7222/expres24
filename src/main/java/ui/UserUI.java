@@ -133,8 +133,11 @@ public class UserUI {
             sum += product.getPrice();
         }
         if (user.getBalance() > sum){
+            System.out.println("Manzilni kiriting: ");
+            String location = Context.stringScanner.nextLine();
+            user.setLocation(location);
             user.setBalance(user.getBalance()-sum);
-            Order order = new Order(UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now(), user, user, user.getId(), restaurant.getId(), products, null, null, OrderStatus.NEW);
+            Order order = new Order(UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now(), user, user, user.getId(), restaurant.getId(), products, null, null, OrderStatus.NEW, user.getLocation());
             orderService.addOrder(order);
             System.out.println("Siz mahsulotni sotib oldingiz");
         }else {
